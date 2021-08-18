@@ -4,7 +4,7 @@
 
 [Chart With R](###Chart)
 
-
+[결측치 정제하기](####결측치 정제하기)
 
 
 
@@ -522,7 +522,83 @@ mean(compact$cty)
 
 ### Chart
 
-- Creating Barplots in R
+- Basic ggplot2
+
+  **qpot은 전처리 단계에서 간단하게 데이터 확인할대 쓰는 것. ggplot2가 최종 보고용.** 
+
+  ![1_11](./materials/1_11.png)
+
+  ![1_11](./materials/1_12.png)
+
+- #### Scatter Plot
+
+  **X, Y축 모두가 Continuous variable 일 때 사용**
+
+  xlim, ylim이 default는 최대, 최소를 다 표현함. 그래서 보통은 xlim/ylim을 꼭 제한 해줘야 함.  
+
+  ```R
+  # Scatter Plot 
+  # Two continuous variable
+  library(ggplot2)
+  
+  ggplot(data=mpg, aes(x=displ, y=hwy)) + 
+    geom_point() +
+    xlim(3, 6) + 
+    ylim(10, 30)
+  
+  #Quiz
+  # 1
+  ggplot(data=mpg, aes(x=cty, y=hwy)) + 
+    geom_point()
+  
+  # 2
+  midwest <- as.data.frame(ggplot2::midwest)
+  ggplot(data=midwest, aes(x=poptotal, y=popasian)) +
+    geom_point() +
+    xlim(0, 500000) + 
+    ylim(0, 10000)
+  
+  ```
+
+
+
+- **Barplots in R**
+
+  평균막대그래프와 빈도막대그래프 두 종류가 있음.
+
+  **평균막대그래프** - 각 집단의 평균값을 막대 길이로 표현한 그래프. 
+
+  일단 평균 테이블을 만들어야 함. 
+
+  ```R
+  library(dplyr)
+  df_mpg <- mpg %>%
+    group_by(drv) %>% 
+    summarise(mean_hwy = mean(hwy))
+  df_mpg
+  ```
+
+  ```R
+  ggplot(data=df_mpg, aes(x=reorder(drv, -mean_hwy), y=mean_hwy)) + 
+    geom_col() 
+  ```
+
+  ggplot(data=df_mpg,` aes(x=reorder(drv, -mean_hwy), y=mean_hwy))`, -> `x의 drv를 -mean_hwy의 역순으로 정렬하겠다. `
+
+  **빈도막대그래프**
+
+  ```R
+  # Frequency Bar Plot
+  # y를 안넣어주고, geom_bar를 하면, y축이 자동으로 Frequency가 된다. 
+  ggplot(data=mpg, aes(x=drv)) + geom_bar()
+  
+  ```
+
+  
+
+  
+
+  
 
   ```R
   
@@ -558,11 +634,11 @@ mean(compact$cty)
   barplot(y[order(y)], horiz=TRUE, col=c("red", "green", "blue", "beige"), border=NA, main = "Title \n of this \n Bar char", xlab="X AXIS TITLE", ylab="Y AXIS TITLE")
   ```
   ![1_1](./materials/1_1.png)
+
   
-  
-  
-	PNG로 저장하기 with command
-	
+
+  PNG로 저장하기 with command
+
   ```R
   # To make this bar plot image file
   # click the export above the image
@@ -571,6 +647,54 @@ mean(compact$cty)
   barplot(y[order(y)], horiz=TRUE, col=c("red", "green", "blue", "beige"), border=NA, main = "Title \n of this \n Bar char", xlab="X AXIS TITLE", ylab="Y AXIS TITLE")
   dev.off()
   ```
+
+- #### Line Graph
+
+  ```R
+  # Line Graph
+  ggplot(data=economics, aes(x=date, y=unemploy)) + geom_line()
+  ggplot(data=economics, aes(x=date, y=psavert)) + geom_line()
+  ```
+
+
+
+
+
+- #### Box Plot
+
+  평균으로만 비교할 순 없다. 
+
+  ![1_13](./materials/1_13.png)
+
+  ![1_13](./materials/1_14.png)
+
+  ​	
+
+  ```R
+  
+  # Box Plot
+  ggplot(data=mpg, aes(x=drv, y=hwy)) + geom_boxplot()
+  
+  # Quiz
+  mpg_com <- mpg %>%
+    filter(class %in%  c("compact", "subcompact", "suv"))
+    
+  ggplot(data=mpg_com, aes(x=class, y=cty)) + geom_boxplot()
+  ```
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
 
 - Histogram in R
 
@@ -600,5 +724,279 @@ mean(compact$cty)
 
 
 
-## Basic of Statistics
 
+
+#### 결측치 정제하기
+
+- 확인하기
+
+  ```R
+  is.na(df)
+  
+  # 테이블 만들어서 확인
+  table(is.na(df))
+  
+  
+  # 열별로 결측치 확인해봐야함. 
+  table(is.na(df$sex))
+  table(is.na(df$score))
+  
+  ```
+
+- 결측치 제외. 
+
+  score컬럼이 결측치가 아닌 것을 지우자.
+
+  ````R
+  df %>% filter(!is.na(score))
+  ````
+
+  컬럼 둘다 지우려면, &으로 연결하면 되지. 
+
+  ```R
+  df_nomiss <-df %>% filter(!is.na(score) & !is.na(sex))
+  df_nomiss
+  
+  ```
+
+  근데 변수가 100개면?
+
+  결측치 싹다 없애주는 함수가 있음. 근데 실제로는 잘 쓰지 않는다. 
+
+  데이터 손실이 너무 큼. 보통은 변수 하나씩, 한다. 
+
+  ```R
+  df_nomiss2 <- na.omit(df)
+  df_nomiss2
+  ```
+
+  요약통계량 구할 때 편한 함수. 이 파라미터 지원하는 함수도 있고, 없는 함수도 있다. 
+
+  ```R
+  mean(df$score, na.rm=T)
+  ```
+
+  summarise 안에 들어갈때도 사용 가능. 
+
+  ```R
+  exam <- read.csv("source/Data/csv_exam.csv", header=TRUE)
+  
+  
+  # math컬럼의 3,8,15행에 NA넣기
+  exam[c(3, 8, 15), "math"] <- NA
+  
+  exam %>% 
+    summarise(mean_math = mean(math))
+  
+  exam %>% 
+    summarise(mean_math = mean(math, na.rm=T))
+  ```
+
+- **결측치 대체하기**
+
+  보통은 대푯값(mode, mean, median)등으로 함. 하지만, 요즘은 머신러닝 모형으로, 주변 변수활용해서 이 변수 춪어한 다음에 그 값을 넣기도 한다
+
+  ```R
+  mean(exam$math, na.rm=T)
+  exam$math <- ifelse(is.na(exam$math), 55, exam$math)
+  ```
+
+  ````R
+  
+  # Quiz
+  mpg <- as.data.frame(ggplot2::mpg)
+  mpg[c(65, 124, 131, 153, 212), "hwy"] <- NA
+  
+  # 1
+  table(is.na(mpg$drv))
+  table(is.na(mpg$hwy))
+  
+  # 
+  mpg %>% filter(!is.na(mpg$hwy)) %>% 
+    group_by(class) %>% 
+    summarise(mean_hwy = mean(hwy)) %>% 
+    arrange(desc(mean_hwy))
+  
+  ````
+
+  
+
+- 이상치
+
+  - 논리적으로 존재할 수 없는 경우, etc) 성별에 G
+
+    1. 빈도분석으로 확인
+    2. 이상치의 경우 ,NA로 바꾼 후 나중에 빼거나 바꿔준다. 
+
+    ```R
+    # Outlier 
+    # 논리적으로 존재할 수 없는 경우 
+    outlier <- data.frame(sex=c(1, 2, 1, 3, 2, 1), 
+                          score=c(5, 4, 3, 4, 2, 6))
+    
+    # 이상치 체크 
+    table(outlier$sex) # 1 or 2
+    table(outlier$score) # 1 ~ 5
+    
+    outlier$sex <- ifelse(outlier$sex ==3, NA, outlier$sex)
+    outlier$score <- ifelse(outlier$score > 5, NA, outlier$score)
+    table(is.na(outlier$sex))
+    table(is.na(outlier$score))
+    
+    outlier %>% 
+      filter(!is.na(outlier$sex) & !is.na(outlier$score)) %>% 
+      group_by(sex) %>% 
+      summarise(mean_score = mean(score))
+    
+    ```
+
+  - 극단적으로 크거나 작은 경우
+
+    보통은 박스플롯 혹은, 2표준편차 등으로 사용. 
+
+    ```R
+    # 극단적인 값. 
+    mpg <- as.data.frame(ggplot2::mpg)
+    boxplot(mpg$hwy)
+    boxplot(mpg$hwy)$stats # box plot의 각 선들 찾아줌.
+    
+    mpg$hwy<-  ifelse(mpg$hwy < 12 | mpg$hwy >37, NA, mpg$hwy)
+    table(is.na(mpg$hwy))
+    
+    
+    mpg %>%
+      group_by(drv) %>%
+      summarise(mean_hwy = mean(hwy, na.rm = T))
+    
+    ```
+
+    Quiz
+
+    ```R
+    # Q
+    mpg <- as.data.frame(ggplot2::mpg)
+    mpg[c(10, 14, 58, 93), "drv"] <- "k"
+    mpg[c(29, 43, 129, 203), "cty"] <- c(3, 4, 39, 42)
+    
+    
+    table(mpg$drv)
+    mpg$drv <- ifelse(mpg$drv %in% c("4", "f", "r"), mpg$drv, NA)
+    table(mpg$drv)
+    
+    boxplot(mpg$cty)$stats #9, 26
+    mpg$cty <-  ifelse(mpg$cty < 9 | mpg$cty > 26, NA,  mpg$cty)
+    boxplot(mpg$cty)
+    
+    mpg %>% 
+      filter( !is.na(drv) & !is.na(cty)) %>% 
+      group_by(drv) %>% 
+      summarise(mean_cty = mean(cty, na.rm=TRUE))
+    
+    ```
+
+- #### 한국복지패널
+
+  ```R
+  
+  # source/Data/data_spss_Koweps2014.sav
+  
+  install.packages("foreign")
+  library(foreign)
+  library(dplyr)
+  library(ggplot2)
+  
+  raw_welfare <- read.spss("source/Data/data_spss_Koweps2014.sav", to.data.frame = T)
+  welfare <-raw_welfare
+  
+  # first look
+  dim(welfare)
+  str(welfare)
+  head(welfare)
+  summary(welfare)
+  View(welfare)
+  
+  welfare <- rename(welfare, 
+                    sex=h0901_4,
+                    birth=h0901_5,
+                    income=h09_din)
+  
+  
+  # Preprocessing
+  # sex
+  class(welfare$sex)
+  summary(welfare$sex) # meaningless
+  table(welfare$sex)
+  table(!is.na(welfare$sex))
+  
+  welfare$sex <- ifelse(welfare$sex == 1, "male", "female")
+  table(welfare$sex)
+  qplot(welfare$sex)
+  
+  # income 
+  class(welfare$income)
+  summary(welfare$income)
+  boxplot(welfare$income)
+  qplot(welfare$income) + xlim(0, 10000)
+  
+  table(!is.na(welfare$income))
+  
+  # age
+  class(welfare$birth)
+  summary(welfare$birth)
+  qplot(welfare$birth)
+  
+  table(!is.na(welfare$birth))
+  
+  welfare$age <- 2014 - welfare$birth + 1
+  summary(welfare$age)
+  qplot(welfare$age)
+  
+  
+  
+  # Analysis
+  # 1 Gender & Income
+  sex_income <- welfare %>% 
+    group_by(sex) %>% 
+    summarise(mean_income = mean(income))
+  sex_income
+  ggplot(data=sex_income, aes(x=sex, y=mean_income)) + geom_col()
+  
+  
+  
+  
+  # 2. Age & Income
+  age_income <-   welfare %>% 
+    group_by(age) %>% 
+    summarise(mean_income = mean(income))
+  ggplot(data=age_income, aes(x=age, y=mean_income)) + geom_point()
+  
+  welfare <- welfare %>% 
+    mutate(ageg = ifelse(age <30, "young", ifelse(age <=59, "middle", "old")))
+  
+  table(welfare$ageg)
+  qplot(welfare$ageg)
+  
+  welfare_income <- welfare %>% 
+    filter(ageg != "young") %>% 
+    group_by(ageg) %>% 
+    summarise(mean_income = mean(income))
+  
+  ggplot(data=welfare_income, aes(x=ageg, y=mean_income)) + geom_col()
+  
+  
+  # 연령대 및 성별에 따른 소득
+  sex_income <- welfare %>% 
+    filter(ageg != "young") %>% 
+    group_by(ageg, sex) %>% 
+    summarise(mean_income = mean(income))
+  
+  sex_income$sex <-  ifelse(sex_income$sex == 1, "male", "female")
+  
+  #default is stack
+  ggplot(data=sex_income, aes(x=ageg, y=mean_income, fill=sex)) + geom_col(position="stack") 
+  ggplot(data=sex_income, aes(x=ageg, y=mean_income, fill=sex)) + geom_col(position="dodge")
+  
+  
+  ```
+
+  
