@@ -1044,7 +1044,7 @@ mean(compact$cty)
 
 
 
-- 두 집단 평균 차이 검정(t 검정)
+- **두 집단 평균 차이 검정(t 검정)**
 
   모집단에서 표본을 추출. 
 
@@ -1096,5 +1096,223 @@ mean(compact$cty)
   ​	![1_15](../note/materials/1_23.png)
 
   ​	
+
+- **대응표본 T검정**
+
+  대응표본이란? 
+
+  ![1_15](../note/materials/1_24.png)
+
+  ![1_15](../note/materials/1_25.png)
+
+  ​	![1_15](../note/materials/1_26.png)
+
+  ​	![1_15](../note/materials/1_27.png)
+
+  ![1_15](../note/materials/1_28.png)
+
+  **대응표본 T-test에서는 분산 동질성 검정이 없다.** 
+
+  데이터 정규성 검정도 보면, 
+
+  ```R
+  # 데이터 정규성 검정
+  # 차이에 대한 정규성 검정
+  d = groupAd - groupBd
+  
+  shapiro.test(d)
+  qqnorm(d)
+  qqline(d)
+  ```
+
+  이 차이 데이터에 대한 검정이야. 
+
+  지금 데이터를 그 차이 데이터로 검정하고 있는데, 분산 동질성 검정을 어떻게 해. d그룹은 하나인데. 
+
+  ```R
+  
+  
+  # 대응표본 T검정
+  raw_d <- read.csv(file="source/Data/htest02d.csv", header=TRUE)
+  
+  groupAd <- raw_d[,1]
+  groupBd <- raw_d[,2]
+  
+  mean(groupAd)
+  mean(groupBd)
+  
+  
+  # Hypothesis
+  # Before After Marketing, No changes
+  # Increased After marketing
+  
+  
+  
+  # 데이터 정규성 검정
+  # 차이에 대한 정규성 검정
+  d = groupAd - groupBd
+  
+  shapiro.test(d)
+  qqnorm(d)
+  qqline(d)
+  
+  
+  # T-test
+  # paired
+  t.test(groupAd, groupBd, alternative = "less", paired = TRUE)
+  
+  
+  # Increased After marketing
+  
+  ```
+
+  
+
+- #### Z 검정
+
+  ![1_15](../note/materials/1_28.png)
+
+  
+
+  ​	![1_15](../note/materials/1_30.png)
+
+  ```R
+  # Z-검정
+  # 데이터 갯수 30개 넘는 경우. 대표본
+  rawN30 <- read.csv(file="source/Data/htest03.csv", header=TRUE)
+  
+  groupA3 <- rawN30[rawN30$group=="A", 1:2]
+  groupB3 <- rawN30[rawN30$group=="B", 1:2]
+  
+  mean(groupA3[, 2])
+  mean(groupB3[, 2])
+  
+  # Hypothesis
+  # H0 : No difference beteen Average height
+  # H1 : Difference beteen Average height
+  
+  
+  # R에서는 따로 z-test준비하지 않는다. 
+  z.test <- function(x1, x2){ 
+    n_x1 = length(x1)
+    n_x2 = length(x2)
+    mean_x1 = mean(x1) 
+    mean_x2 = mean(x2)
+    
+    cat("\n")
+    cat("\tTwo Sample z-test\n") 
+    cat("\n")
+    cat("mean of x1:", mean_x1, "\n") 
+    cat("mean of x2:", mean_x2, "\n")
+    
+    var_x1 = var(x1) 
+    var_x2 = var(x2)
+    
+    z = (mean_x1 - mean_x2)/sqrt((var_x1/n_x1)+(var_x2/n_x2)) 
+    abs_z = abs(z)
+    cat("z =", abs_z, "\n")
+    p_value = 1-pnorm(abs_z)
+    cat("p-value =", p_value)
+  }
+  
+  z.test(groupA3[, 2], groupB3[, 2])
+  
+  ```
+
+  Z-test를 써야 하는데, t-test를 써버리면? 결과가 다르게 나와버린. 
+
+  
+
+  
+
+
+
+- #### ANOVA 검정
+
+  집단 내 오차는, 각 집단별로 나오지. 
+
+  ![1_15](../note/materials/1_31.png)
+
+  각 집단에 2명만 있다고 가정해 보자. 
+
+  ![1_15](../note/materials/1_32.png)
+
+  ​	![1_15](../note/materials/1_33.png)
+
+  ​	![1_15](../note/materials/1_34.png)
+
+  ​	![1_15](../note/materials/1_35.png)
+
+  ​	![1_15](../note/materials/1_36.png)
+
+  ​	![1_15](../note/materials/1_37.png)
+
+  
+
+  ​	![1_15](../note/materials/1_38.png)
+
+  ![1_15](../note/materials/1_39.png)
+
+  ​	![1_15](../note/materials/1_40.png)
+
+  
+
+  
+
+  ![1_15](../note/materials/1_41.png)
+
+  ​	X, y가 다르든, y, z가 다르든. X=Y=Z는 아니라는 거야.
+
+  ​	또한, 아노바 테스트에서 분산 동질성 검정을 할 때는 **levene/bartlett** 테스트를 주로 한다.
+
+  ​	**빨간박스에서, 위에가 그룹 간 오자. 아래가 그룹 내 오차이다.** 
+
+  
+
+  ​	![1_15](../note/materials/1_42.png)
+
+
+
+
+
+- 분할표를 이용한 연관성 분석. 카이제곱 거머정. 
+
+  ![1_15](../note/materials/1_43.png)
+
+  
+
+  ​	![1_15](../note/materials/1_44.png)
+
+  ​	![1_15](../note/materials/1_45.png)
+
+  ​	
+
+  ![1_15](../note/materials/1_46.png)
+
+  ![1_15](../note/materials/1_47.png)
+
+  ![1_15](../note/materials/1_48.png)
+
+  ![1_15](../note/materials/1_49.png)
+
+  
+
+  ![1_15](../note/materials/1_50.png)
+
+  ​	
+
+  ​	![1_15](../note/materials/1_52.png)
+
+  기대도수 라는게, 위	에서 구한 기댓값들 말하는 것
+
+  ```R
+  # Chi Square Testing
+  raw_chisq <- read.csv(file="source/Data/htest05.csv", header=TRUE)
+  rawTable <- table(raw_chisq)
+  rawTable
+  
+  
+  chisq.test(rawTable, correct=FALSE)
+  ```
 
   
