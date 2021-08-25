@@ -5,7 +5,7 @@
 ##################
 #Each Group has 3 samples
 ##################
-rawN3 <-read.csv(file="source/Data/htest01.csv", header=TRUE)
+rawN3 <-read.csv(file="source/Dataㄷ/htest01.csv", header=TRUE)
 
 groupA <- rawN3[rawN3$group=='A', 1:2]
 groupB <- rawN3[rawN3$group=='B', 1:2]
