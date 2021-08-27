@@ -294,3 +294,72 @@
 
 ##Logistic Regression
 
+- 종속변수범위가 정해져있다. 
+
+  ![5_1](./materials/5_1.png)
+
+  ​	![5_1](./materials/5_2.png)
+
+  ​	![5_1](./materials/5_3.png)
+
+  ​	선형회귀 분석은, 선형 직선이 그려진다. 거기서 종속변수에 변형을 시킨다. 
+
+  ​	![5_1](./materials/5_4.png)
+
+  ​	![5_1](./materials/5_5.png)
+
+  ​		![5_1](./materials/5_6.png)
+
+  ​				![5_1](./materials/5_7.png)
+
+  ​					![5_1](./materials/5_8.png)
+
+  ​		![5_1](./materials/5_9.png)
+
+
+
+- #### 구현
+
+  ![5_1](./materials/5_10.png)
+
+  
+
+Boosted Logistic Regression은 약한 분류기를 여러개 더하는 것. 각각의 feature에 대해서 logistic 식을 만들고(feature를 하나 쓴 것), 이런 약한 분류기를 더해가서 합쳐나가는 것.  
+
+#### Boosted Logistic Regression![5_1](./materials/5_11.png)
+
+#### 	Logistic Model Trees
+
+![5_1](./materials/5_13.png)
+
+#### Penalized Logistic Regression
+
+베타를 막 고를 수 있는게 아니라, 제한을 주는 것. 베타 제곱의 합이 t보다 작도록. **L2**. ![5_1](./materials/5_14.png)
+
+##### Regularized Logistic Regression L1 정규화![5_1](./materials/5_15.png)
+
+
+
+- #### 결과 해석
+
+  iter는 반복 횟수를 의미한다. 
+
+  ![5_1](./materials/5_16.png)
+
+  여기는 람다가 있지. 람다 값을 볼 수가 있다. ![5_1](./materials/5_17.png)
+
+  primal은 파라미터 기준 최적화, dual은 제약변수 기준 최적화. 
+
+  epsilon은 내가 학습을 언제 멈출 것이냐에 대한 기준.  시뮬레이션 N번째 했는데, 하는데 N+1번째랑 차이가 epsilon이면 멈추겠다. 의 기준인 것. 즉, 진전이 없으면 멈추겠다는건데, 그때의 기준인 것. 
+
+  ![5_1](./materials/5_18.png)
+
+  **Cost VS Loss**
+
+  Loss는 데이터 하나하나, cost는 데이터 전체에 대해. ![5_1](./materials/5_19.png)
+
+
+
+- #### 실습
+
+  
